@@ -1,0 +1,75 @@
+---
+title: "Matched Samples Methods Vignette"
+author: "AMS 597 Group 2"
+date: "2017-04-27"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Matched Samples Methods Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+When dealing with scenarios where some samples from matched pairs design are missing, common statistical tests lack
+operating characteristics to robustly infer on parameters. 
+The pmtest package provides users with five options when analyzing partially matched samples:
+
+- Modified T-Statistic by Kim et al^[Kim B, Kim I, Lee S, Kim S, Rha S, Chung H. Statistical methods of translating microarray data into clinically relevant diagnostic information in colorectal cancer. Bioinformatics. 2004;21(4):517–528] 
+- Corrected Z-Test by Looney and Jones^[Looney S, Jones P. A method for comparing two normal means using combined samples of correlated and uncorrelated data. Statistics in Medicine. 2003;22:1601–1610] 
+- Maximum Likelihood Test by Lin and Stivers^[Lin P, Stivers L. On differences of means with incomplete data. Biometrika] 
+- Maximum Likelihood Test by Ekbohm^[Ekbohm G. On comparing means in the paired case with incomplete data on both responses. Biometrika] 
+- Weighted Z-test by Kuan and Huang^[Kuan, Pei Fen, and Bo Huang. “A Simple and Robust Method for Partially Matched Samples Using the P-Values Pooling Approach.” Statistics in medicine 32.19 (2013): 3247–3259. PMC.]
+
+This document introduces you to situations where you will use these methods, and shows you how to apply them in partially matched samples situations.
+
+## Data Input and Final Output
+
+Ideally, in a matched samples analysis, one would expect a total of 2~n~ samples. However, there are many instances where samples are missing from one or both of the pairs. In partially matched samples situations, the data looks like
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(data.frame(c(10,NA,12,14,2,4),c(8,4,NA,13,4,5)),col.names=c("Case","Control"))
+```
+
+Note that each method takes in two one column vectors, each representing "Case" and "Control" respecitvely.
+
+Partially matched samples can be viewed as data generated from two experimental designs where both designs intend to estimate the same parameter:
+
+1. n~1~ matched pairs
+```{r, echo=FALSE, results='asis'}
+knitr::kable(data.frame(c(10,14,2,4),c(8,13,4,5)),col.names=c("Case","Control"))
+```
+
+2.  independent groups with n~2~ and n~3~ per group
+    *    n~2~ would be the vector `c(12)` from the first column of the first table
+    *    n~3~ would be vector `c(4)` from the second column of the first table
+
+## Recommended Use
+
+The five statistical analysis strategies for partially matched samples that we provide are sufficient for most uses, but we want to point out some limitations and advantages of each. 
+
+Lin and Stivers, Ekbohm, Kim et al. and Looney and Jones methods were developed by assuming the data can be approximated with a Gaussian distribution. The weighted z-test approach by Kuan and Huang is therefore more robust. The four other methods may not be valid for non-gaussian data of small or moderate sizes. 
+
+Ekbohm is designed for equal variance situations between n~2~ and n~3~ populations. The function does check for equal variance and outputs a message indicating that Lin and Stivers may be more appropriate if variance aren't equal. We urge the interested user to read the Kuan and Huang paper cited in footnote five for more information on usage of these methods. 
+
+## Method Notes
+
+The functions are named:
+
+- `kim.t.test()`
+- `lj.z.test()`
+- `lin.stivers.test()`
+- `ekbohm.test()`
+- `weighted.z.test()`
+
+
+Each method takes the same arguments:
+`method(vector1, vector2, alternative)` where vector 1 and vector 2 are recoded as x and y for simplicity. Alternative needs to be specified for p-value calculation and is "two.sided" as default. Test statistics are output when available, and each method returns the associated p-value.
+
+
+
+
+
+
+
+
+
+
